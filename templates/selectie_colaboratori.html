@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Tabela SELECTIE COLABORATORI</h2>
+
+<form action="/selectie_colaboratori/add" method="post" class="form-table">
+
+<div class="form-group">
+<label>ID</label>
+<input name="id" required>
+</div>
+
+<div class="form-group">
+<label>Colaborator</label>
+<select name="colaborator" required>
+{% for c in colaboratori %}
+<option value="{{c[0]}}">
+{{c[1]}}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Ofertă</label>
+<select name="oferta" required>
+{% for o in oferte %}
+<option value="{{o[0]}}">
+{{o[1]}}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Procent</label>
+<input name="procent" type="number">
+</div>
+
+<div class="form-actions">
+<button type="submit" class="btn-primary">
+Adaugă
+</button>
+</div>
+
+</form>
+
+
+<hr>
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID</th>
+<th>Colaborator</th>
+<th>Ofertă</th>
+<th>Procent</th>
+<th>Acțiuni</th>
+</tr>
+
+{% for s in selectii %}
+<tr>
+<form action="/selectie_colaboratori/update/{{s[0]}}" method="post">
+
+<td>{{s[0]}}</td>
+
+<td>
+<select name="colaborator">
+{% for c in colaboratori %}
+<option value="{{c[0]}}" {% if c[0]==s[1] %} selected {% endif %}>
+{{c[1]}}
+</option>
+{% endfor %}
+</select>
+</td>
+
+<td>
+<select name="oferta">
+{% for o in oferte %}
+<option value="{{o[0]}}" {% if o[0]==s[3] %} selected {% endif %}>
+{{o[1]}}
+</option>
+{% endfor %}
+</select>
+</td>
+
+<td>
+<input name="procent" value="{{s[5]}}">
+</td>
+
+<td>
+<div class="action-buttons">
+
+<form action="/selectie_colaboratori/update/{{s[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/selectie_colaboratori/delete/{{s[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+</form>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Tabela CLIENT</h2>
+
+<form action="/clienti/add" method="post" class="form-table">
+
+<div class="form-group">
+<label>ID</label>
+<input name="id" required>
+</div>
+
+<div class="form-group">
+<label>Nume</label>
+<input name="nume" required>
+</div>
+
+<div class="form-group">
+<label>Prenume</label>
+<input name="prenume" required>
+</div>
+
+<div class="form-group">
+<label>Nr. Telefon</label>
+<input name="telefon" required>
+</div>
+
+<div class="form-group">
+<label>Nr. lucrări anterioare</label>
+<input name="nr" type="number" value="0">
+</div>
+
+<div class="form-actions">
+<button type="submit" class="btn-primary">
+Adaugă
+</button>
+</div>
+
+</form>
+
+
+<hr>
+<div class="table-wrapper">
+<table border="1">
+<tr>
+    <th>ID</th>
+    <th>Nume</th>
+    <th>Prenume</th>
+    <th>Nr. telefon</th>
+    <th>Nr. lucrări anterioare</th>
+    <th>Acțiuni</th>
+</tr>
+
+{% for c in clienti %}
+<tr>
+<form action="/clienti/update/{{c[0]}}" method="post">
+
+    <td>{{c[0]}}</td>
+
+    <td>
+        <input name="nume" value="{{c[1]}}" required>
+    </td>
+
+    <td>
+        <input name="prenume" value="{{c[2]}}" required>
+    </td>
+
+    <td>
+        <input name="telefon" value="{{c[3]}}" required>
+    </td>
+
+    <td>
+        <input name="nr" value="{{c[4]}}" type="number">
+    </td>
+<td>
+<div class="action-buttons">
+
+<form action="/clienti/update/{{c[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/clienti/delete/{{c[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+
+</form>
+</tr>
+{% endfor %}
+
+</table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Tabela ECHIPA</h2>
+
+<form action="/echipa/add" method="post">
+
+ID <input name="id" required>
+
+Șef
+<select name="sef">
+{% for s in sefi %}
+<option value="{{s[0]}}">
+{{s[1]}} {{s[2]}}
+</option>
+{% endfor %}
+</select>
+
+<button>Adaugă</button>
+
+</form>
+
+<hr>
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID Echipa</th>
+<th>Șef</th>
+<th>Acțiuni</th>
+</tr>
+
+{% for e in echipe %}
+<tr>
+<form action="/echipa/update/{{e[0]}}" method="post">
+
+<td>{{e[0]}}</td>
+
+<td>
+<select name="sef">
+{% for s in sefi %}
+<option value="{{s[0]}}"
+{% if s[0] == e[1] %} selected {% endif %}>
+{{s[1]}} {{s[2]}}
+</option>
+{% endfor %}
+</select>
+</td>
+
+<td>
+<div class="action-buttons">
+
+<form action="/echipa/update/{{e[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/echipa/delete/{{e[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+</form>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

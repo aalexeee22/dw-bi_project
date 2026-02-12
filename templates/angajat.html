@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Tabela ANGAJAT</h2>
+
+<form action="/angajat/add" method="post" class="form-table">
+
+<div class="form-group">
+<label>ID</label>
+<input name="id" required>
+</div>
+
+<div class="form-group">
+<label>Nume</label>
+<input name="nume" required>
+</div>
+
+<div class="form-group">
+<label>Prenume</label>
+<input name="prenume" required>
+</div>
+
+<div class="form-group">
+<label>Telefon</label>
+<input name="telefon" required>
+</div>
+
+<div class="form-group">
+<label>Vârstă</label>
+<input name="varsta" type="number">
+</div>
+
+<div class="form-group">
+<label>Specializare</label>
+<input name="specializare">
+</div>
+
+<div class="form-group">
+<label>Experiență</label>
+<input name="experienta" type="number">
+</div>
+
+<div class="form-group">
+<label>Salariu</label>
+<input name="salariu">
+</div>
+
+<div class="form-group">
+<label>Cod echipă</label>
+<input name="echipa">
+</div>
+
+<div class="form-actions">
+<button type="submit" class="btn-primary">
+Adaugă
+</button>
+</div>
+
+</form>
+
+
+
+<hr>
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID</th>
+<th>Nume</th>
+<th>Prenume</th>
+<th>Nr. telefon</th>
+<th>Vârstă</th>
+<th>Specializare</th>
+<th>Experiență</th>
+<th>Salariu</th>
+<th>Cod echipă</th>
+<th>Acțiuni</th>
+</tr>
+
+{% for a in angajati %}
+<tr>
+<form action="/angajat/update/{{a[0]}}" method="post">
+
+<td>{{a[0]}}</td>
+<td><input name="nume" value="{{a[1]}}"></td>
+<td><input name="prenume" value="{{a[2]}}"></td>
+<td><input name="telefon" value="{{a[3]}}"></td>
+<td><input name="varsta" value="{{a[4]}}"></td>
+<td><input name="specializare" value="{{a[5]}}"></td>
+<td><input name="experienta" value="{{a[6]}}"></td>
+<td><input name="salariu" value="{{a[7]}}"></td>
+<td><input name="echipa" value="{{a[8]}}"></td>
+<td>
+<div class="action-buttons">
+
+<form action="/angajat/update/{{a[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/angajat/delete/{{a[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+
+</form>
+</tr>
+{% endfor %}
+</table>
+    </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Tabela COLABORATORI</h2>
+
+<form action="/colaboratori/add" method="post" class="form-table">
+
+<div class="form-group">
+<label>ID</label>
+<input name="id" required>
+</div>
+
+<div class="form-group">
+<label>Nume</label>
+<input name="nume" required>
+</div>
+
+<div class="form-group">
+<label>Telefon</label>
+<input name="telefon" required>
+</div>
+
+<div class="form-actions">
+<button type="submit" class="btn-primary">
+Adaugă
+</button>
+</div>
+
+</form>
+
+
+<hr>
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID</th>
+<th>Nume</th>
+<th>Telefon</th>
+<th>Acțiuni</th>
+</tr>
+
+{% for c in colaboratori %}
+<tr>
+<form action="/colaboratori/update/{{c[0]}}" method="post">
+
+<td>{{c[0]}}</td>
+<td><input name="nume" value="{{c[1]}}"></td>
+<td><input name="telefon" value="{{c[2]}}"></td>
+
+<td>
+<div class="action-buttons">
+
+<form action="/colaboratori/update/{{c[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/colaboratori/delete/{{c[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+</form>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

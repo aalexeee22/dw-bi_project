@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<h2>Tabela UTILAJ</h2>
+
+<form action="/utilaj/add" method="post" class="form-table">
+
+<div class="form-group">
+<label>ID</label>
+<input name="id" required>
+</div>
+
+<div class="form-group">
+<label>Nume</label>
+<input name="nume" required>
+</div>
+
+<div class="form-group">
+<label>An fabricație</label>
+<input type="date" name="an" required>
+</div>
+
+<div class="form-actions">
+<button type="submit" class="btn-primary">
+Adaugă
+</button>
+</div>
+
+</form>
+
+
+<hr>
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID</th>
+<th>Nume</th>
+<th>An fabricație</th>
+<th>Acțiuni</th>
+</tr>
+
+{% for u in utilaje %}
+<tr>
+<form action="/utilaj/update/{{u[0]}}" method="post">
+
+<td>{{u[0]}}</td>
+
+<td>
+<input name="nume" value="{{u[1]}}">
+</td>
+
+<td>
+<input type="date" name="an"
+value="{{u[2].strftime('%Y-%m-%d')}}">
+</td>
+
+<td>
+<div class="action-buttons">
+
+<form action="/utilaj/update/{{u[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/utilaj/delete/{{u[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+</form>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

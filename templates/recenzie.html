@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Tabela RECENZIE</h2>
+
+<form action="/recenzie/add" method="post" class="form-table">
+
+<div class="form-group">
+<label>ID</label>
+<input name="id" required>
+</div>
+
+<div class="form-group">
+<label>Client</label>
+<select name="client" required>
+{% for c in clienti %}
+<option value="{{c[0]}}">
+{{c[1]}} {{c[2]}}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Lucrare</label>
+<select name="lucrare" required>
+{% for l in lucrari %}
+<option value="{{l[0]}}">
+{{l[1]}}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Părere</label>
+<input name="parere">
+</div>
+
+<div class="form-actions">
+<button type="submit" class="btn-primary">
+Adaugă
+</button>
+</div>
+
+</form>
+
+
+<hr>
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID</th>
+<th>Client</th>
+<th>Lucrare</th>
+<th>Părere</th>
+<th>Acțiuni</th>
+</tr>
+
+{% for r in recenzii %}
+<tr>
+<form action="/recenzie/update/{{r[0]}}" method="post">
+
+<td>{{r[0]}}</td>
+
+<td>
+<select name="client">
+{% for c in clienti %}
+<option value="{{c[0]}}"
+{% if c[0]==r[1] %} selected {% endif %}>
+{{c[1]}} {{c[2]}}
+</option>
+{% endfor %}
+</select>
+</td>
+
+<td>
+<select name="lucrare">
+{% for l in lucrari %}
+<option value="{{l[0]}}"
+{% if l[0]==r[4] %} selected {% endif %}>
+{{l[1]}}
+</option>
+{% endfor %}
+</select>
+</td>
+
+<td>
+<input name="parere" value="{{r[6]}}">
+</td>
+
+<td>
+<div class="action-buttons">
+
+<form action="/recenzie/update/{{r[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/recenzie/delete/{{r[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+</form>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

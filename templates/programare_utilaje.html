@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Tabela PROGRAMARE UTILAJE</h2>
+
+<form action="/programare_utilaje/add" method="post" class="form-table">
+
+<div class="form-group">
+<label>Utilaj</label>
+<select name="utilaj" required>
+{% for u in utilaje %}
+<option value="{{u[0]}}">
+{{u[1]}}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Locație</label>
+<select name="locatie" required>
+{% for l in locatii %}
+<option value="{{l[0]}}">
+{{l[1]}} - {{l[2]}}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Dată început</label>
+<input type="date" name="data_start" required>
+</div>
+
+<div class="form-group">
+<label>Dată terminare</label>
+<input type="date" name="data_end" required>
+</div>
+
+<div class="form-actions">
+<button type="submit" class="btn-primary">
+Adaugă
+</button>
+</div>
+
+</form>
+
+<hr>
+<div class="action-buttons">
+<table border="1">
+<tr>
+<th>Utilaj</th>
+<th>Locație</th>
+<th>Dată început</th>
+<th>Dată terminare</th>
+<th>Acțiuni</th>
+</tr>
+
+{% for p in programari %}
+<tr>
+<form action="/programare_utilaje/update/{{p[0]}}/{{p[2]}}" method="post">
+
+<td>{{p[1]}}</td>
+<td>{{p[3]}} - {{p[4]}}</td>
+
+<td>
+<input type="date" name="data_start"
+value="{{p[5].strftime('%Y-%m-%d')}}">
+</td>
+
+<td>
+<input type="date" name="data_end"
+value="{{p[6].strftime('%Y-%m-%d')}}">
+</td>
+
+<td>
+<div class="action-buttons">
+
+<form action="/programare_utilaje/update/{{p[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/programare_utilaje/delete/{{p[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+</form>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

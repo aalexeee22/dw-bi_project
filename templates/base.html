@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modul Frontend</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+{% include "menu.html" %}
+
+{% block content %}
+{% endblock %}
+
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const wrapper = document.getElementById("tableWrapper");
+    const topScroll = document.querySelector(".table-scroll-top");
+    const topInner = document.querySelector(".table-scroll-top-inner");
+    const table = document.getElementById("mainTable");
+
+    // ✅ STOP daca nu exista tabel pe pagina
+    if (!wrapper || !topScroll || !topInner || !table) return;
+
+    function syncWidth() {
+        topInner.style.width = table.scrollWidth + "px";
+    }
+
+    syncWidth();
+    window.addEventListener("resize", syncWidth);
+
+    topScroll.addEventListener("scroll", () => {
+        wrapper.scrollLeft = topScroll.scrollLeft;
+    });
+
+    wrapper.addEventListener("scroll", () => {
+        topScroll.scrollLeft = wrapper.scrollLeft;
+    });
+
+});
+</script>
+
+
+</body>
+</html>

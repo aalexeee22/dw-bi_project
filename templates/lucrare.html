@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<h2>Tabela LUCRARE</h2>
+
+<form action="/lucrare/add" method="post" class="form-table">
+
+<div class="form-group">
+<label>ID</label>
+<input name="id" required>
+</div>
+
+<div class="form-group">
+<label>Nume lucrare</label>
+<input name="nume" required>
+</div>
+
+<div class="form-group">
+<label>Locație</label>
+<select name="locatie" required>
+{% for l in locatii %}
+<option value="{{l[0]}}">
+{{l[1]}} - {{l[2]}}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Șef</label>
+<select name="sef" required>
+{% for s in sefi %}
+<option value="{{s[0]}}">
+{{s[1]}} {{s[2]}}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-actions">
+<button type="submit" class="btn-primary">
+Adaugă
+</button>
+</div>
+
+</form>
+
+
+<hr>
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID</th>
+<th>Nume</th>
+<th>Locație</th>
+<th>Șef</th>
+<th>Acțiuni</th>
+</tr>
+
+{% for l in lucrari %}
+<tr>
+<form action="/lucrare/update/{{l[0]}}" method="post">
+
+<td>{{l[0]}}</td>
+
+<td>
+<input name="nume" value="{{l[1]}}">
+</td>
+
+<td>
+<select name="locatie">
+{% for loc in locatii %}
+<option value="{{loc[0]}}"
+{% if loc[0]==l[2] %} selected {% endif %}>
+{{loc[1]}} - {{loc[2]}}
+</option>
+{% endfor %}
+</select>
+</td>
+
+<td>
+<select name="sef">
+{% for s in sefi %}
+<option value="{{s[0]}}"
+{% if s[0]==l[5] %} selected {% endif %}>
+{{s[1]}} {{s[2]}}
+</option>
+{% endfor %}
+</select>
+</td>
+
+<td>
+<div class="action-buttons">
+
+<form action="/lucrare/update/{{l[0]}}" method="post">
+    <button type="submit" class="btn-primary small">
+        Actualizează
+    </button>
+</form>
+
+<form action="/lucrare/delete/{{l[0]}}" method="post">
+    <button type="submit" class="btn-danger small">
+        Șterge
+    </button>
+</form>
+
+</div>
+</td>
+
+</form>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

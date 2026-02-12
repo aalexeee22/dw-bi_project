@@ -1,0 +1,200 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    margin-top: 30px;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+    margin-top: 0;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input, select {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    min-width: 150px;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #4fb19d;
+}
+
+button {
+    background-color: #4fb19d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #9ac5e5;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th {
+    background-color: #c98c9a;
+    color: white;
+    padding: 10px;
+}
+
+table td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+table tr:hover {
+    background-color: #f2f2f2;
+}
+
+.menu {
+    margin-bottom: 20px;
+}
+
+.menu select {
+    padding: 10px;
+    font-size: 15px;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #eee;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 10px;
+}
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top:5px;
+}
+
+    .btn-primary,
+.btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 32px;
+    padding: 0 14px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    border-radius: 6px;
+    border: none;
+
+    cursor: pointer;
+    text-decoration: none;
+}
+
+
+.btn-primary,
+.btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 30px;
+    padding: 0 14px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    border-radius: 6px;
+    border: none;
+
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #4fb19d;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #3a9c89;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.form-row input {
+    flex: 1;
+    min-width: 140px;
+}
+.form-row button {
+    height: 34px;
+    white-space: nowrap;
+}
+.form-table {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 24px;
+    margin-bottom: 25px;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+.form-group input:focus {
+    border-color: #4fb19d;
+    background: white;
+}
+.form-actions {
+    grid-column: span 2;
+}
+
