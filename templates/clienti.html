@@ -7,11 +7,6 @@
 <form action="/clienti/add" method="post" class="form-table">
 
 <div class="form-group">
-<label>ID</label>
-<input name="id" required>
-</div>
-
-<div class="form-group">
 <label>Nume</label>
 <input name="nume" required>
 </div>
@@ -23,7 +18,11 @@
 
 <div class="form-group">
 <label>Nr. Telefon</label>
-<input name="telefon" required>
+<input name="telefon"
+       pattern="[0-9]+"
+       title="Doar cifre"
+       required>
+
 </div>
 
 <div class="form-group">

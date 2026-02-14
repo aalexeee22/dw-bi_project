@@ -1,15 +1,17 @@
 from flask import Flask, render_template, request, redirect
 import oracledb
-
+import os
+from dotenv import load_dotenv
 app = Flask(__name__)
-
+load_dotenv()
 # conectare ORACLE
-conn = oracledb.connect(
-    user="ADMIN_APLICATIE",
-    password="1234",
-    dsn="localhost:1521/XEPDB1"
-)
-
+def get_connection():
+    return oracledb.connect(
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        dsn=os.getenv("DB_DSN")
+    )
+conn = get_connection()
 # HOME
 @app.route("/")
 def index():
@@ -47,6 +49,9 @@ def clienti():
 def add_client():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_client),0)+1 FROM CLIENT")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
     INSERT INTO CLIENT(
         id_client,
@@ -67,7 +72,7 @@ def add_client():
         :5
     )
     """, (
-        int(request.form["id"]),
+        new_id,
         request.form["nume"],
         request.form["prenume"],
         request.form["telefon"],
@@ -109,7 +114,7 @@ def update_client(id):
     return redirect("/clienti")
 
 
-@app.route("/clienti/delete/<id>")
+@app.route("/clienti/delete/<id>", methods=["POST"])
 def delete_client(id):
     cur = conn.cursor()
 
@@ -146,12 +151,14 @@ def locatie():
 @app.route("/locatie/add", methods=["POST"])
 def add_locatie():
     cur = conn.cursor()
+    cur.execute("SELECT NVL(MAX(id_locatie),0)+1 FROM LOCATIE")
+    new_id = cur.fetchone()[0]
 
     cur.execute("""
         INSERT INTO LOCATIE
         VALUES (:1,:2,:3,:4,:5)
     """, (
-        request.form["id"],
+        new_id,
         request.form["judet"],
         request.form["localitate"],
         request.form["strada"],
@@ -188,7 +195,7 @@ def update_locatie(id):
 
     return redirect("/locatie")
 
-@app.route("/locatie/delete/<id>")
+@app.route("/locatie/delete/<id>",methods=["POST"])
 def delete_locatie(id):
     cur = conn.cursor()
 
@@ -205,8 +212,10 @@ def delete_locatie(id):
 # ANGAJAT
 @app.route("/angajat")
 def angajat():
+
     cur = conn.cursor()
 
+    # angajati
     cur.execute("""
     SELECT
         id_angajat,
@@ -221,107 +230,205 @@ def angajat():
     FROM ANGAJAT
     ORDER BY id_angajat
     """)
+    angajati = cur.fetchall()
 
-    data = cur.fetchall()
+    # ⭐ ECHIPE (asta lipsește)
+    cur.execute("""
+    SELECT id_echipa
+    FROM ECHIPA
+    ORDER BY id_echipa
+    """)
+    echipe = cur.fetchall()
+
     cur.close()
 
     return render_template(
         "angajat.html",
-        angajati=data,
+        angajati=angajati,
+        echipe=echipe,
         tabel_curent="angajat"
     )
+
 @app.route("/angajat/add", methods=["POST"])
 def add_angajat():
+
     cur = conn.cursor()
 
-    cur.execute("""
-    INSERT INTO ANGAJAT(
-        id_angajat,
-        nume,
-        prenume,
-        numar_telefon,
-        varsta,
-        specializare,
-        experienta,
-        salariu,
-        cod_echipa
-    )
-    VALUES(
-        :1,
-        :2,
-        :3,
-        DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:4),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        ),
-        :5,
-        :6,
-        :7,
-        DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:8),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        ),
-        :9
-    )
-    """, (
-        int(request.form["id"]),
-        request.form["nume"],
-        request.form["prenume"],
-        request.form["telefon"],
-        int(request.form["varsta"]),
-        request.form["specializare"],
-        int(request.form["experienta"]),
-        request.form["salariu"],
-        request.form["echipa"] if request.form["echipa"] else None
-    ))
+    try:
+        varsta = int(request.form["varsta"])
+        experienta = int(request.form["experienta"])
+        telefon = request.form["telefon"]
+        salariu = int(request.form["salariu"])
 
-    conn.commit()
-    cur.close()
+        # ⭐ Validari logice
+        if varsta < 18:
+            return "Varsta trebuie sa fie minim 18"
 
-    return redirect("/angajat")
+
+
+        if salariu <= 0:
+            return "Salariul trebuie sa fie mai mare decat 0"
+
+        if experienta < 0:
+            return "Experienta nu poate fi negativa"
+
+        if not telefon.isdigit():
+            return "Telefon trebuie sa contina doar cifre"
+
+        # ⭐ Verificare FK echipa
+        echipa = request.form["echipa"]
+
+        if echipa:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM ECHIPA
+                WHERE id_echipa=:1
+            """, [int(echipa)])
+
+            if cur.fetchone()[0] == 0:
+                return "Echipa nu exista"
+
+        # ⭐ Generare ID
+        cur.execute("SELECT NVL(MAX(id_angajat),0)+1 FROM ANGAJAT")
+        new_id = cur.fetchone()[0]
+
+        # ⭐ INSERT
+        cur.execute("""
+        INSERT INTO ANGAJAT(
+            id_angajat,
+            nume,
+            prenume,
+            numar_telefon,
+            varsta,
+            specializare,
+            experienta,
+            salariu,
+            cod_echipa
+        )
+        VALUES(
+            :1,
+            :2,
+            :3,
+            DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:4),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            ),
+            :5,
+            :6,
+            :7,
+            DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:8),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            ),
+            :9
+        )
+        """, (
+            new_id,
+            request.form["nume"],
+            request.form["prenume"],
+            telefon,
+            varsta,
+            request.form["specializare"],
+            experienta,
+            request.form["salariu"],
+            int(echipa) if echipa else None
+        ))
+
+        conn.commit()
+        return redirect("/angajat")
+
+    except Exception as e:
+        return f"Eroare: {str(e)}"
+
+    finally:
+        cur.close()
+
 @app.route("/angajat/update/<int:id>", methods=["POST"])
 def update_angajat(id):
+
     cur = conn.cursor()
 
-    cur.execute("""
-    UPDATE ANGAJAT
-    SET
-        nume=:1,
-        prenume=:2,
-        numar_telefon=DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:3),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        ),
-        varsta=:4,
-        specializare=:5,
-        experienta=:6,
-        salariu=DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:7),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        ),
-        cod_echipa=:8
-    WHERE id_angajat=:9
-    """, (
-        request.form["nume"],
-        request.form["prenume"],
-        request.form["telefon"],
-        int(request.form["varsta"]),
-        request.form["specializare"],
-        int(request.form["experienta"]),
-        request.form["salariu"],
-        request.form["echipa"] if request.form["echipa"] else None,
-        id
-    ))
+    try:
+        nume = request.form["nume"]
+        prenume = request.form["prenume"]
+        telefon = request.form["telefon"]
 
-    conn.commit()
-    cur.close()
+        varsta = int(request.form["varsta"])
+        experienta = int(request.form["experienta"])
+        salariu = int(request.form["salariu"])
 
-    return redirect("/angajat")
-@app.route("/angajat/delete/<int:id>")
+        echipa = request.form["echipa"]
+
+        # ⭐ VALIDARI
+
+        if not telefon.isdigit():
+            return "Telefon trebuie sa contina doar cifre"
+
+        if varsta < 18:
+            return "Varsta trebuie sa fie minim 18"
+
+        if experienta < 0:
+            return "Experienta nu poate fi negativa"
+
+        if salariu <= 0:
+            return "Salariul trebuie sa fie mai mare decat 0"
+
+        # ⭐ VALIDARE FK ECHIPA
+        if echipa:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM ECHIPA
+                WHERE id_echipa=:1
+            """, [int(echipa)])
+
+            if cur.fetchone()[0] == 0:
+                return "Echipa nu exista"
+
+        # ⭐ UPDATE REAL
+        cur.execute("""
+        UPDATE ANGAJAT
+        SET
+            nume=:1,
+            prenume=:2,
+            numar_telefon=DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:3),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            ),
+            varsta=:4,
+            specializare=:5,
+            experienta=:6,
+            salariu=DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:7),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            ),
+            cod_echipa=:8
+        WHERE id_angajat=:9
+        """, (
+            nume,
+            prenume,
+            telefon,
+            varsta,
+            request.form["specializare"],
+            experienta,
+            salariu,
+            int(echipa) if echipa else None,
+            id
+        ))
+
+        conn.commit()
+        return redirect("/angajat")
+
+    except Exception as e:
+        return f"Eroare update angajat: {str(e)}"
+
+    finally:
+        cur.close()
+
+@app.route("/angajat/delete/<int:id>",methods=["POST"])
 def delete_angajat(id):
     cur = conn.cursor()
 
@@ -361,6 +468,9 @@ def sef():
 def add_sef():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_sef),0)+1 FROM SEF")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
     INSERT INTO SEF(
         id_sef,
@@ -389,7 +499,7 @@ def add_sef():
         )
     )
     """, (
-        int(request.form["id"]),
+        new_id,
         request.form["nume"],
         request.form["prenume"],
         request.form["telefon"],
@@ -438,7 +548,7 @@ def update_sef(id):
     cur.close()
 
     return redirect("/sef")
-@app.route("/sef/delete/<int:id>")
+@app.route("/sef/delete/<int:id>", methods=["POST"])
 def delete_sef(id):
     cur = conn.cursor()
 
@@ -474,6 +584,9 @@ def colaboratori():
 def add_colaborator():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_colaborator),0)+1 FROM COLABORATORI")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
         INSERT INTO COLABORATORI(
             id_colaborator,
@@ -482,7 +595,7 @@ def add_colaborator():
         )
         VALUES(:1,:2,:3)
     """, (
-        int(request.form["id"]),
+        new_id,
         request.form["nume"],
         request.form["telefon"]
     ))
@@ -512,7 +625,7 @@ def update_colaborator(id):
 
     return redirect("/colaboratori")
 
-@app.route("/colaboratori/delete/<int:id>")
+@app.route("/colaboratori/delete/<int:id>",methods=["POST"])
 def delete_colaborator(id):
     cur = conn.cursor()
 
@@ -566,6 +679,9 @@ def selectie_colaboratori():
 def add_selectie():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_selectie),0)+1 FROM SELECTIE_COLABORATORI")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
     INSERT INTO SELECTIE_COLABORATORI(
         id_selectie,
@@ -575,7 +691,7 @@ def add_selectie():
     )
     VALUES(:1,:2,:3,:4)
     """, (
-        int(request.form["id"]),
+        new_id,
         int(request.form["colaborator"]),
         int(request.form["oferta"]),
         int(request.form["procent"])
@@ -607,7 +723,7 @@ def update_selectie(id):
     cur.close()
 
     return redirect("/selectie_colaboratori")
-@app.route("/selectie_colaboratori/delete/<int:id>")
+@app.route("/selectie_colaboratori/delete/<int:id>",methods=["POST"])
 def delete_selectie(id):
     cur = conn.cursor()
 
@@ -654,6 +770,9 @@ def echipa():
 def add_echipa():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_echipa),0)+1 FROM ECHIPA")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
     INSERT INTO ECHIPA(
         id_echipa,
@@ -661,7 +780,7 @@ def add_echipa():
     )
     VALUES(:1,:2)
     """, (
-        int(request.form["id"]),
+        new_id,
         int(request.form["sef"])
     ))
 
@@ -686,7 +805,7 @@ def update_echipa(id):
     cur.close()
 
     return redirect("/echipa")
-@app.route("/echipa/delete/<int:id>")
+@app.route("/echipa/delete/<int:id>",methods=["POST"])
 def delete_echipa(id):
     cur = conn.cursor()
 
@@ -748,6 +867,9 @@ def factura():
 def add_factura():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_factura),0)+1 FROM FACTURA")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
     INSERT INTO FACTURA(
         id_factura,
@@ -758,7 +880,7 @@ def add_factura():
     )
     VALUES(:1,:2,:3,:4,TO_DATE(:5,'YYYY-MM-DD'))
     """, (
-        int(request.form["id"]),
+        new_id,
         request.form["oferta"] if request.form["oferta"] else None,
         request.form["client"] if request.form["client"] else None,
         int(request.form["lucrare"]),
@@ -793,7 +915,7 @@ def update_factura(id):
     cur.close()
 
     return redirect("/factura")
-@app.route("/factura/delete/<int:id>")
+@app.route("/factura/delete/<int:id>",methods=["POST"])
 def delete_factura(id):
     cur = conn.cursor()
 
@@ -852,6 +974,9 @@ def lucrare():
 def add_lucrare():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_lucrare),0)+1 FROM LUCRARE")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
     INSERT INTO LUCRARE(
         id_lucrare,
@@ -861,7 +986,7 @@ def add_lucrare():
     )
     VALUES(:1,:2,:3,:4)
     """, (
-        int(request.form["id"]),
+        new_id,
         request.form["nume"],
         int(request.form["locatie"]),
         int(request.form["sef"])
@@ -893,7 +1018,7 @@ def update_lucrare(id):
     cur.close()
 
     return redirect("/lucrare")
-@app.route("/lucrare/delete/<int:id>")
+@app.route("/lucrare/delete/<int:id>",methods=["POST"])
 def delete_lucrare(id):
     cur = conn.cursor()
 
@@ -930,6 +1055,9 @@ def oferta():
 def add_oferta():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_oferta),0)+1 FROM OFERTA")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
         INSERT INTO OFERTA(
             id_oferta,
@@ -937,7 +1065,7 @@ def add_oferta():
         )
         VALUES(:1,:2)
     """, (
-        int(request.form["id"]),
+        new_id,
         int(request.form["pret"])
     ))
 
@@ -962,7 +1090,7 @@ def update_oferta(id):
     cur.close()
 
     return redirect("/oferta")
-@app.route("/oferta/delete/<int:id>")
+@app.route("/oferta/delete/<int:id>",methods=["POST"])
 def delete_oferta(id):
     cur = conn.cursor()
 
@@ -1058,7 +1186,7 @@ def update_programare(utilaj, locatie):
     cur.close()
 
     return redirect("/programare_utilaje")
-@app.route("/programare_utilaje/delete/<int:utilaj>/<int:locatie>")
+@app.route("/programare_utilaje/delete/<int:utilaj>/<int:locatie>", methods=["POST"])
 def delete_programare(utilaj, locatie):
     cur = conn.cursor()
 
@@ -1113,6 +1241,9 @@ def recenzie():
 def add_recenzie():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_recenzie),0)+1 FROM RECENZIE")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
     INSERT INTO RECENZIE(
         id_recenzie,
@@ -1122,7 +1253,7 @@ def add_recenzie():
     )
     VALUES(:1,:2,:3,:4)
     """, (
-        int(request.form["id"]),
+        new_id,
         int(request.form["client"]),
         int(request.form["lucrare"]),
         request.form["parere"]
@@ -1154,7 +1285,7 @@ def update_recenzie(id):
     cur.close()
 
     return redirect("/recenzie")
-@app.route("/recenzie/delete/<int:id>")
+@app.route("/recenzie/delete/<int:id>",methods=["POST"])
 def delete_recenzie(id):
     cur = conn.cursor()
 
@@ -1194,6 +1325,9 @@ def utilaj():
 def add_utilaj():
     cur = conn.cursor()
 
+    cur.execute("SELECT NVL(MAX(id_utilaj),0)+1 FROM UTILAJ")
+    new_id = cur.fetchone()[0]
+
     cur.execute("""
     INSERT INTO UTILAJ(
         id_utilaj,
@@ -1231,7 +1365,7 @@ def update_utilaj(id):
     cur.close()
 
     return redirect("/utilaj")
-@app.route("/utilaj/delete/<int:id>")
+@app.route("/utilaj/delete/<int:id>",methods=["POST"])
 def delete_utilaj(id):
     cur = conn.cursor()
 
