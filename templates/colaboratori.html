@@ -45,7 +45,12 @@ Adaugă
 
 <td>{{c[0]}}</td>
 <td><input name="nume" value="{{c[1]}}"></td>
-<td><input name="telefon" value="{{c[2]}}"></td>
+<td>
+    <input name="telefon"
+       pattern="[0-9]+"
+       title="Doar cifre"
+       value="{{c[2]}}"
+       required>
 
 <td>
 <div class="action-buttons">

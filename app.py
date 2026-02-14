@@ -612,26 +612,38 @@ def colaboratori():
 def add_colaborator():
     cur = conn.cursor()
 
-    cur.execute("SELECT NVL(MAX(id_colaborator),0)+1 FROM COLABORATORI")
-    new_id = cur.fetchone()[0]
+    try:
+        nume = request.form["nume"]
+        telefon = request.form["telefon"]
 
-    cur.execute("""
+        if not telefon.isdigit():
+            return "Telefon invalid"
+
+        cur.execute("SELECT NVL(MAX(id_colaborator),0)+1 FROM COLABORATORI")
+        new_id = cur.fetchone()[0]
+
+        cur.execute("""
         INSERT INTO COLABORATORI(
             id_colaborator,
             nume,
             numar_telefon
         )
         VALUES(:1,:2,:3)
-    """, (
-        new_id,
-        request.form["nume"],
-        request.form["telefon"]
-    ))
+        """, (
+            new_id,
+            nume,
+            telefon
+        ))
 
-    conn.commit()
-    cur.close()
+        conn.commit()
+        return redirect("/colaboratori")
 
-    return redirect("/colaboratori")
+    except:
+        return "Date invalide"
+
+    finally:
+        cur.close()
+
 @app.route("/colaboratori/update/<int:id>", methods=["POST"])
 def update_colaborator(id):
     cur = conn.cursor()
