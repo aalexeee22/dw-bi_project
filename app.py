@@ -494,88 +494,142 @@ def sef():
     )
 @app.route("/sef/add", methods=["POST"])
 def add_sef():
+
     cur = conn.cursor()
 
-    cur.execute("SELECT NVL(MAX(id_sef),0)+1 FROM SEF")
-    new_id = cur.fetchone()[0]
+    try:
+        nume = request.form["nume"]
+        prenume = request.form["prenume"]
+        telefon = request.form["telefon"]
 
-    cur.execute("""
-    INSERT INTO SEF(
-        id_sef,
-        nume,
-        prenume,
-        numar_telefon,
-        varsta,
-        experienta,
-        salariu
-    )
-    VALUES(
-        :1,
-        :2,
-        :3,
-        DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:4),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        ),
-        :5,
-        :6,
-        DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:7),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+        varsta = int(request.form["varsta"])
+        experienta = int(request.form["experienta"])
+        salariu = int(request.form["salariu"])
+
+        if not telefon.isdigit():
+            return "Telefon invalid"
+
+        if varsta < 18:
+            return "Varsta trebuie sa fie minim 18"
+
+        if experienta < 0:
+            return "Experienta nu poate fi negativa"
+
+        if salariu <= 0:
+            return "Salariul trebuie sa fie mai mare decat 0"
+
+        cur.execute("SELECT NVL(MAX(id_sef),0)+1 FROM SEF")
+        new_id = cur.fetchone()[0]
+
+        cur.execute("""
+        INSERT INTO SEF(
+            id_sef,
+            nume,
+            prenume,
+            numar_telefon,
+            varsta,
+            experienta,
+            salariu
         )
-    )
-    """, (
-        new_id,
-        request.form["nume"],
-        request.form["prenume"],
-        request.form["telefon"],
-        int(request.form["varsta"]),
-        int(request.form["experienta"]),
-        request.form["salariu"]
-    ))
+        VALUES(
+            :1,
+            :2,
+            :3,
+            DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:4),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            ),
+            :5,
+            :6,
+            DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:7),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            )
+        )
+        """, (
+            new_id,
+            nume,
+            prenume,
+            telefon,
+            varsta,
+            experienta,
+            salariu
+        ))
 
-    conn.commit()
-    cur.close()
+        conn.commit()
+        return redirect("/sef")
 
-    return redirect("/sef")
+    except:
+        return "Date invalide"
+
+    finally:
+        cur.close()
+
 @app.route("/sef/update/<int:id>", methods=["POST"])
 def update_sef(id):
+
     cur = conn.cursor()
 
-    cur.execute("""
-    UPDATE SEF
-    SET
-        nume=:1,
-        prenume=:2,
-        numar_telefon=DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:3),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        ),
-        varsta=:4,
-        experienta=:5,
-        salariu=DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:6),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        )
-    WHERE id_sef=:7
-    """, (
-        request.form["nume"],
-        request.form["prenume"],
-        request.form["telefon"],
-        int(request.form["varsta"]),
-        int(request.form["experienta"]),
-        request.form["salariu"],
-        id
-    ))
+    try:
+        nume = request.form["nume"]
+        prenume = request.form["prenume"]
+        telefon = request.form["telefon"]
 
-    conn.commit()
-    cur.close()
+        varsta = int(request.form["varsta"])
+        experienta = int(request.form["experienta"])
+        salariu = int(request.form["salariu"])
 
-    return redirect("/sef")
+        if not telefon.isdigit():
+            return "Telefon invalid"
+
+        if varsta < 18:
+            return "Varsta trebuie sa fie minim 18"
+
+        if experienta < 0:
+            return "Experienta nu poate fi negativa"
+
+        if salariu <= 0:
+            return "Salariul trebuie sa fie mai mare decat 0"
+
+        cur.execute("""
+        UPDATE SEF
+        SET
+            nume=:1,
+            prenume=:2,
+            numar_telefon=DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:3),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            ),
+            varsta=:4,
+            experienta=:5,
+            salariu=DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:6),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            )
+        WHERE id_sef=:7
+        """, (
+            nume,
+            prenume,
+            telefon,
+            varsta,
+            experienta,
+            salariu,
+            id
+        ))
+
+        conn.commit()
+        return redirect("/sef")
+
+    except:
+        return "Date invalide"
+
+    finally:
+        cur.close()
+
 @app.route("/sef/delete/<int:id>", methods=["POST"])
 def delete_sef(id):
     cur = conn.cursor()

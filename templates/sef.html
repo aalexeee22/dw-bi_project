@@ -20,24 +20,34 @@
 <label>Nr. telefon</label>
 <input name="telefon"
        pattern="[0-9]+"
+       inputmode="numeric"
        title="Doar cifre"
        required>
-
 </div>
 
 <div class="form-group">
 <label>Vârstă</label>
-<input name="varsta" type="number">
+<input name="varsta"
+       type="number"
+       min="18"
+       required>
 </div>
 
 <div class="form-group">
 <label>Experiență</label>
-<input name="experienta" type="number">
+<input name="experienta"
+       type="number"
+       min="0"
+       required>
 </div>
 
 <div class="form-group">
 <label>Salariu</label>
-<input name="salariu" required>
+<input name="salariu"
+       type="number"
+       min="1"
+       step="1"
+       required>
 </div>
 
 <div class="form-actions">
@@ -47,6 +57,7 @@ Adaugă
 </div>
 
 </form>
+
 
 
 <hr>
@@ -86,20 +97,38 @@ Adaugă
 </td>
 
 <td>
-<input name="telefon" value="{{s[3]}}">
+<input name="telefon"
+       value="{{s[3]}}"
+       pattern="[0-9]+"
+       inputmode="numeric"
+       required>
 </td>
 
 <td>
-<input name="varsta" value="{{s[4]}}">
+<input name="varsta"
+       type="number"
+       min="18"
+       value="{{s[4]}}"
+       required>
 </td>
 
 <td>
-<input name="experienta" value="{{s[5]}}">
+<input name="experienta"
+       type="number"
+       min="0"
+       value="{{s[5]}}"
+       required>
 </td>
 
 <td>
-<input name="salariu" value="{{s[6]}}">
+<input name="salariu"
+       type="number"
+       min="1"
+       step="1"
+       value="{{s[6]}}"
+       required>
 </td>
+
 
 <td>
 <div class="action-buttons">
