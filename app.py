@@ -49,69 +49,103 @@ def clienti():
 def add_client():
     cur = conn.cursor()
 
-    cur.execute("SELECT NVL(MAX(id_client),0)+1 FROM CLIENT")
-    new_id = cur.fetchone()[0]
+    try:
+        nume = request.form["nume"]
+        prenume = request.form["prenume"]
+        telefon = request.form["telefon"]
+        nr = int(request.form["nr"])
 
-    cur.execute("""
-    INSERT INTO CLIENT(
-        id_client,
-        nume,
-        prenume,
-        numar_telefon,
-        nr_lucrari_anterioare
-    )
-    VALUES (
-        :1,
-        :2,
-        :3,
-        DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:4),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        ),
-        :5
-    )
-    """, (
-        new_id,
-        request.form["nume"],
-        request.form["prenume"],
-        request.form["telefon"],
-        int(request.form["nr"])
-    ))
+        if not telefon.isdigit():
+            return "Telefon invalid"
 
-    conn.commit()
-    cur.close()
+        if nr < 0:
+            return "Nr lucrari trebuie sa fie >= 0"
 
-    return redirect("/clienti")
+        cur.execute("SELECT NVL(MAX(id_client),0)+1 FROM CLIENT")
+        new_id = cur.fetchone()[0]
+
+        cur.execute("""
+        INSERT INTO CLIENT(
+            id_client,
+            nume,
+            prenume,
+            numar_telefon,
+            nr_lucrari_anterioare
+        )
+        VALUES (
+            :1,
+            :2,
+            :3,
+            DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:4),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            ),
+            :5
+        )
+        """, (
+            new_id,
+            nume,
+            prenume,
+            telefon,
+            nr
+        ))
+
+        conn.commit()
+        return redirect("/clienti")
+
+    except:
+        return "Date invalide"
+
+    finally:
+        cur.close()
+
 
 @app.route("/clienti/update/<int:id>", methods=["POST"])
 def update_client(id):
     cur = conn.cursor()
 
-    cur.execute("""
-    UPDATE CLIENT
-    SET
-        nume = :1,
-        prenume = :2,
-        numar_telefon = DBMS_CRYPTO.ENCRYPT(
-            UTL_RAW.CAST_TO_RAW(:3),
-            4353,
-            UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
-        ),
-        nr_lucrari_anterioare = :4
-    WHERE id_client = :5
-    """, (
-        request.form["nume"],
-        request.form["prenume"],
-        request.form["telefon"],
-        int(request.form["nr"]),
-        id
-    ))
+    try:
+        nume = request.form["nume"]
+        prenume = request.form["prenume"]
+        telefon = request.form["telefon"]
+        nr = int(request.form["nr"])
 
-    conn.commit()
-    cur.close()
+        if not telefon.isdigit():
+            return "Telefon invalid"
 
-    return redirect("/clienti")
+        if nr < 0:
+            return "Nr lucrari trebuie sa fie >= 0"
+
+        cur.execute("""
+        UPDATE CLIENT
+        SET
+            nume = :1,
+            prenume = :2,
+            numar_telefon = DBMS_CRYPTO.ENCRYPT(
+                UTL_RAW.CAST_TO_RAW(:3),
+                4353,
+                UTL_RAW.CAST_TO_RAW('cheie_secreta_1234')
+            ),
+            nr_lucrari_anterioare = :4
+        WHERE id_client = :5
+        """, (
+            nume,
+            prenume,
+            telefon,
+            nr,
+            id
+        ))
+
+        conn.commit()
+        return redirect("/clienti")
+
+    except:
+        return "Date invalide"
+
+    finally:
+        cur.close()
+
 
 
 @app.route("/clienti/delete/<id>", methods=["POST"])
@@ -260,7 +294,6 @@ def add_angajat():
         telefon = request.form["telefon"]
         salariu = int(request.form["salariu"])
 
-        # ⭐ Validari logice
         if varsta < 18:
             return "Varsta trebuie sa fie minim 18"
 
@@ -275,7 +308,6 @@ def add_angajat():
         if not telefon.isdigit():
             return "Telefon trebuie sa contina doar cifre"
 
-        # ⭐ Verificare FK echipa
         echipa = request.form["echipa"]
 
         if echipa:
@@ -288,11 +320,9 @@ def add_angajat():
             if cur.fetchone()[0] == 0:
                 return "Echipa nu exista"
 
-        # ⭐ Generare ID
         cur.execute("SELECT NVL(MAX(id_angajat),0)+1 FROM ANGAJAT")
         new_id = cur.fetchone()[0]
 
-        # ⭐ INSERT
         cur.execute("""
         INSERT INTO ANGAJAT(
             id_angajat,
@@ -360,8 +390,6 @@ def update_angajat(id):
         salariu = int(request.form["salariu"])
 
         echipa = request.form["echipa"]
-
-        # ⭐ VALIDARI
 
         if not telefon.isdigit():
             return "Telefon trebuie sa contina doar cifre"

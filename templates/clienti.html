@@ -27,7 +27,11 @@
 
 <div class="form-group">
 <label>Nr. lucrări anterioare</label>
-<input name="nr" type="number" value="0">
+<input name="nr"
+       type="number"
+       min="0"
+       value="0"
+       required>
 </div>
 
 <div class="form-actions">
@@ -66,11 +70,19 @@ Adaugă
     </td>
 
     <td>
-        <input name="telefon" value="{{c[3]}}" required>
+        <input name="telefon"
+       value="{{c[3]}}"
+       pattern="[0-9]+"
+       title="Doar cifre"
+       required>
     </td>
 
     <td>
-        <input name="nr" value="{{c[4]}}" type="number">
+        <input name="nr"
+       type="number"
+       min="0"
+       value="{{c[4]}}"
+       required>
     </td>
 <td>
 <div class="action-buttons">
