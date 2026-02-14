@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const today = new Date();
+    const localDate = today.getFullYear() + "-" +
+        String(today.getMonth()+1).padStart(2,'0') + "-" +
+        String(today.getDate()).padStart(2,'0');
+
+    document.querySelectorAll("input[name='an']").forEach(input => {
+        input.max = localDate;
+    });
+
+});
+</script>
 
 
 <h2>Tabela UTILAJ</h2>
@@ -14,7 +28,11 @@
 
 <div class="form-group">
 <label>An fabricație</label>
-<input type="date" name="an" required>
+<input type="date"
+       name="an"
+       max="{{ today }}"
+       required>
+
 </div>
 
 <div class="form-actions">
@@ -47,8 +65,13 @@ Adaugă
 </td>
 
 <td>
-<input type="date" name="an"
-value="{{u[2].strftime('%Y-%m-%d')}}">
+    <input
+       type="date"
+       value="{{u[2].strftime('%Y-%m-%d')}}"
+       name="an"
+       max="{{ today }}"
+       required>
+
 </td>
 
 <td>
