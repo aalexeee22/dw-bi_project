@@ -1095,41 +1095,63 @@ def oferta():
 def add_oferta():
     cur = conn.cursor()
 
-    cur.execute("SELECT NVL(MAX(id_oferta),0)+1 FROM OFERTA")
-    new_id = cur.fetchone()[0]
+    try:
+        pret = int(request.form["pret"])
 
-    cur.execute("""
+        if pret <= 0:
+            return "Pretul trebuie sa fie mai mare decat 0"
+
+        cur.execute("SELECT NVL(MAX(id_oferta),0)+1 FROM OFERTA")
+        new_id = cur.fetchone()[0]
+
+        cur.execute("""
         INSERT INTO OFERTA(
             id_oferta,
             pret
         )
         VALUES(:1,:2)
-    """, (
-        new_id,
-        int(request.form["pret"])
-    ))
+        """, (
+            new_id,
+            pret
+        ))
 
-    conn.commit()
-    cur.close()
+        conn.commit()
+        return redirect("/oferta")
 
-    return redirect("/oferta")
+    except:
+        return "Date invalide"
+
+    finally:
+        cur.close()
+
 @app.route("/oferta/update/<int:id>", methods=["POST"])
 def update_oferta(id):
     cur = conn.cursor()
 
-    cur.execute("""
+    try:
+        pret = int(request.form["pret"])
+
+        if pret <= 0:
+            return "Pretul trebuie sa fie mai mare decat 0"
+
+        cur.execute("""
         UPDATE OFERTA
         SET pret=:1
         WHERE id_oferta=:2
-    """, (
-        int(request.form["pret"]),
-        id
-    ))
+        """, (
+            pret,
+            id
+        ))
 
-    conn.commit()
-    cur.close()
+        conn.commit()
+        return redirect("/oferta")
 
-    return redirect("/oferta")
+    except:
+        return "Date invalide"
+
+    finally:
+        cur.close()
+
 @app.route("/oferta/delete/<int:id>",methods=["POST"])
 def delete_oferta(id):
     cur = conn.cursor()
