@@ -1,4 +1,5 @@
 def sync_timp_dw(cur_dw):
+
     cur_dw.execute("""
         DECLARE
             v_min DATE;
@@ -12,7 +13,6 @@ def sync_timp_dw(cur_dw):
             generare_timp_upsert(v_min, v_max);
         END;
     """)
-
 def sync_client_dw(cur_dw):
 
     cur_dw.execute("""
@@ -41,6 +41,15 @@ def sync_client_dw(cur_dw):
         s.nr_lucrari_anterioare
     )
     """)
+
+    cur_dw.execute("""
+    DELETE FROM client d
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM ADMIN_APLICATIE.client s
+        WHERE s.id_client = d.id_client
+    )
+    """)
 def sync_locatie_dw(cur_dw):
 
     cur_dw.execute("""
@@ -66,6 +75,15 @@ def sync_locatie_dw(cur_dw):
         s.localitate
     )
     """)
+
+    cur_dw.execute("""
+    DELETE FROM locatie d
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM ADMIN_APLICATIE.locatie s
+        WHERE s.id_locatie = d.id_locatie
+    )
+    """)
 def sync_lucrare_dw(cur_dw):
 
     cur_dw.execute("""
@@ -86,6 +104,15 @@ def sync_lucrare_dw(cur_dw):
     VALUES (
         s.id_lucrare,
         s.nume_lucrare
+    )
+    """)
+
+    cur_dw.execute("""
+    DELETE FROM lucrare d
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM ADMIN_APLICATIE.lucrare s
+        WHERE s.id_lucrare = d.id_lucrare
     )
     """)
 def sync_echipa_dw(cur_dw):
@@ -117,6 +144,15 @@ def sync_echipa_dw(cur_dw):
         s.id_echipa,
         s.nume_sef,
         s.nr_angajati
+    )
+    """)
+
+    cur_dw.execute("""
+    DELETE FROM echipa d
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM ADMIN_APLICATIE.echipa s
+        WHERE s.id_echipa = d.id_echipa
     )
     """)
 def sync_vanzari_dw(cur_dw):
@@ -167,6 +203,15 @@ def sync_vanzari_dw(cur_dw):
         s.cod_locatie,
         s.id_echipa,
         s.pret
+    )
+    """)
+
+    cur_dw.execute("""
+    DELETE FROM vanzari d
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM ADMIN_APLICATIE.factura s
+        WHERE s.id_factura = d.id_factura
     )
     """)
 def sync_all_dw(conn_dw):
