@@ -2,16 +2,18 @@ from flask import Flask, render_template, request, redirect
 import oracledb
 import os
 from dotenv import load_dotenv
+from dw import sync_all_dw
 app = Flask(__name__)
 load_dotenv()
 # conectare ORACLE
-def get_connection():
+def get_connection(DB_USER, DB_PASSWORD, DB_DSN):
     return oracledb.connect(
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        dsn=os.getenv("DB_DSN")
+        user=os.getenv(DB_USER),
+        password=os.getenv(DB_PASSWORD),
+        dsn=os.getenv(DB_DSN)
     )
-conn = get_connection()
+conn = get_connection("DB_USER","DB_PASSWORD","DB_DSN")
+conn_dw   = get_connection("DB_USER_DW","DB_PASSWORD_DW","DB_DSN")
 # HOME
 @app.route("/")
 def index():
@@ -1494,6 +1496,56 @@ def delete_utilaj(id):
     cur.close()
 
     return redirect("/utilaj")
+
+@app.route("/dw/load/client", methods=["POST"])
+def dw_load_client():
+
+    cur = conn_dw.cursor()
+
+    cur.execute("""
+    MERGE INTO client d
+    USING (
+        SELECT
+            id_client,
+            nume || ' ' || prenume nume_client,
+            nr_lucrari_anterioare
+        FROM admin_aplicatie.client
+    ) s
+    ON (d.id_client = s.id_client)
+
+    WHEN MATCHED THEN UPDATE SET
+        d.nume_client = s.nume_client,
+        d.nr_lucrari_anterioare = s.nr_lucrari_anterioare
+
+    WHEN NOT MATCHED THEN INSERT (
+        id_client,
+        nume_client,
+        nr_lucrari_anterioare
+    )
+    VALUES (
+        s.id_client,
+        s.nume_client,
+        s.nr_lucrari_anterioare
+    )
+    """)
+
+    conn_dw.commit()
+    cur.close()
+
+    return "DW CLIENT SYNC OK"
+
+from flask import jsonify
+
+@app.route("/dw/sync_all", methods=["POST"])
+def sync_dw():
+    try:
+        sync_all_dw(conn_dw)
+        return jsonify({"status": "ok", "message": "Sincronizare DW realizata"})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
 
 # RUN
 if __name__ == "__main__":

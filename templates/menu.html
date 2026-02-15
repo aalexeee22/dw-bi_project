@@ -1,3 +1,25 @@
+<script>
+function syncDW() {
+
+    fetch("/dw/sync_all", {
+        method: "POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if(data.status === "ok"){
+            alert("DW sincronizat cu succes");
+        } else {
+            alert("Eroare: " + data.message);
+        }
+
+    })
+    .catch(err => {
+        alert("Eroare conexiune server");
+    });
+
+}
+</script>
 <div class="menu">
 <form>
 <select onchange="location = this.value;">
@@ -17,4 +39,9 @@
     <option value="/utilaj" {% if tabel_curent=="utilaj" %} selected {% endif %}>UTILAJ</option>
 </select>
 </form>
+<button onclick="syncDW()" class="btn-primary">
+Sincronizeaza DW
+</button>
+
+
 </div>
