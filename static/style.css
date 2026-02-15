@@ -73,6 +73,8 @@ table tr:hover {
 
 .menu {
     margin-bottom: 20px;
+    display:flex;
+
 }
 
 .menu select {
@@ -198,3 +200,28 @@ table tr:hover {
     grid-column: span 2;
 }
 
+.button-sync {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top:5px;
+    margin-left:4px;
+    height: 40px;
+    padding: 0 18px;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    border-radius: 6px;
+    border: none;
+
+    background-color: #4fb19d;
+    color: white;
+
+    cursor: pointer;
+}
+
+.button-sync:hover {
+    background-color: #3a9c89;
+}

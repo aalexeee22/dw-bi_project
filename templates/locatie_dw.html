@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>DW - DIMENSIUNE LOCAȚIE</h2>
+
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID Locație</th>
+<th>Județ</th>
+<th>Localitate</th>
+</tr>
+
+{% for l in locatii %}
+<tr>
+<td>{{l[0]}}</td>
+<td>{{l[1]}}</td>
+<td>{{l[2]}}</td>
+</tr>
+{% endfor %}
+
+</table>
+</div>
+
+{% endblock %}

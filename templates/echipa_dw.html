@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>DW - DIMENSIUNE ECHIPĂ</h2>
+
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID Echipă</th>
+<th>Nume Șef</th>
+<th>Nr Angajați</th>
+</tr>
+
+{% for e in echipe %}
+<tr>
+<td>{{e[0]}}</td>
+<td>{{e[1]}}</td>
+<td>{{e[2]}}</td>
+</tr>
+{% endfor %}
+
+</table>
+</div>
+
+{% endblock %}

@@ -21,27 +21,59 @@ function syncDW() {
 }
 </script>
 <div class="menu">
+
+<!-- select OLTP -->
 <form>
 <select onchange="location = this.value;">
-    <option value="/">Selectează tabela</option>
-    <option value="/angajat" {% if tabel_curent=="angajat" %} selected {% endif %}>ANGAJAT</option>
-    <option value="/clienti" {% if tabel_curent=="clienti" %} selected {% endif %}>CLIENT</option>
-    <option value="/colaboratori" {% if tabel_curent=="colaboratori" %} selected {% endif %}>COLABORATORI</option>
-    <option value="/echipa" {% if tabel_curent=="echipa" %} selected {% endif %}>ECHIPA</option>
-    <option value="/factura" {% if tabel_curent=="factura" %} selected {% endif %}>FACTURA</option>
-    <option value="/locatie" {% if tabel_curent=="locatie" %} selected {% endif %}>LOCATIE</option>
-    <option value="/lucrare" {% if tabel_curent=="lucrare" %} selected {% endif %}>LUCRARE</option>
-    <option value="/oferta" {% if tabel_curent=="oferta" %} selected {% endif %}>OFERTA</option>
-    <option value="/programare_utilaje" {% if tabel_curent=="programare_utilaje" %} selected {% endif %}>PROGRAMARE UTILAJE</option>
-    <option value="/recenzie" {% if tabel_curent=="recenzie" %} selected {% endif %}>RECENZIE</option>
-    <option value="/sef" {% if tabel_curent=="sef" %} selected {% endif %}>SEF</option>
-    <option value="/selectie_colaboratori" {% if tabel_curent=="selectie_colaboratori" %} selected {% endif %}>SELECTIE COLABORATORI</option>
-    <option value="/utilaj" {% if tabel_curent=="utilaj" %} selected {% endif %}>UTILAJ</option>
+
+{% if zona == "dw" %}
+<option value="/">Mergi la OLTP (editare)</option>
+{% else %}
+<option value="/">Selectează tabela OLTP</option>
+{% endif %}
+
+<option value="/angajat" {% if tabel_curent=="angajat" %} selected {% endif %}>ANGAJAT</option>
+<option value="/clienti" {% if tabel_curent=="clienti" %} selected {% endif %}>CLIENT</option>
+<option value="/colaboratori" {% if tabel_curent=="colaboratori" %} selected {% endif %}>COLABORATORI</option>
+<option value="/echipa" {% if tabel_curent=="echipa" %} selected {% endif %}>ECHIPA</option>
+<option value="/factura" {% if tabel_curent=="factura" %} selected {% endif %}>FACTURA</option>
+<option value="/locatie" {% if tabel_curent=="locatie" %} selected {% endif %}>LOCATIE</option>
+<option value="/lucrare" {% if tabel_curent=="lucrare" %} selected {% endif %}>LUCRARE</option>
+<option value="/oferta" {% if tabel_curent=="oferta" %} selected {% endif %}>OFERTA</option>
+<option value="/programare_utilaje" {% if tabel_curent=="programare_utilaje" %} selected {% endif %}>PROGRAMARE UTILAJE</option>
+<option value="/recenzie" {% if tabel_curent=="recenzie" %} selected {% endif %}>RECENZIE</option>
+<option value="/sef" {% if tabel_curent=="sef" %} selected {% endif %}>SEF</option>
+<option value="/selectie_colaboratori" {% if tabel_curent=="selectie_colaboratori" %} selected {% endif %}>SELECTIE COLABORATORI</option>
+<option value="/utilaj" {% if tabel_curent=="utilaj" %} selected {% endif %}>UTILAJ</option>
+
 </select>
 </form>
-<button onclick="syncDW()" class="btn-primary">
-Sincronizeaza DW
-</button>
 
+
+
+<!-- select DW -->
+<form>
+<select onchange="location = this.value;">
+
+{% if zona == "oltp" %}
+<option value="/">Mergi la DW (vizualizare)</option>
+{% else %}
+<option value="/">Selectează tabela DW</option>
+{% endif %}
+
+<option value="/dw/client" {% if tabel_curent=="dw_client" %} selected {% endif %}>DW CLIENT</option>
+<option value="/dw/locatie" {% if tabel_curent=="dw_locatie" %} selected {% endif %}>DW LOCATIE</option>
+<option value="/dw/lucrare" {% if tabel_curent=="dw_lucrare" %} selected {% endif %}>DW LUCRARE</option>
+<option value="/dw/echipa" {% if tabel_curent=="dw_echipa" %} selected {% endif %}>DW ECHIPA</option>
+<option value="/dw/timp" {% if tabel_curent=="dw_timp" %} selected {% endif %}>DW TIMP</option>
+<option value="/dw/vanzari" {% if tabel_curent=="dw_vanzari" %} selected {% endif %}>DW VANZARI</option>
+
+</select>
+</form>
+
+
+<button onclick="syncDW()" class="button-sync">
+Sincronizează DW
+</button>
 
 </div>

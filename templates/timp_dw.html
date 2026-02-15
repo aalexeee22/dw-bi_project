@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>DW - DIMENSIUNE TIMP</h2>
+
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>Data</th>
+<th>An</th>
+<th>Luna</th>
+<th>Nume lună</th>
+<th>Zi an</th>
+<th>Zi lună</th>
+<th>Zi săptămână</th>
+<th>Nume zi</th>
+<th>Săptămână an</th>
+<th>Săptămână lună</th>
+<th>Weekend</th>
+</tr>
+
+{% for t in timp %}
+<tr>
+<td>{{t[0].strftime('%Y-%m-%d')}}</td>
+<td>{{t[1]}}</td>
+<td>{{t[2]}}</td>
+<td>{{t[3]}}</td>
+<td>{{t[4]}}</td>
+<td>{{t[5]}}</td>
+<td>{{t[6]}}</td>
+<td>{{t[7]}}</td>
+<td>{{t[8]}}</td>
+<td>{{t[9]}}</td>
+<td>{{t[10]}}</td>
+</tr>
+{% endfor %}
+
+</table>
+</div>
+
+{% endblock %}

@@ -1535,7 +1535,7 @@ def dw_load_client():
     return "DW CLIENT SYNC OK"
 
 from flask import jsonify
-
+# sincronizare DW
 @app.route("/dw/sync_all", methods=["POST"])
 def sync_dw():
     try:
@@ -1545,7 +1545,120 @@ def sync_dw():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+# CLIENT DW
+@app.route("/dw/client")
+def dw_client():
 
+    cur = conn_dw.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM client
+        ORDER BY id_client
+    """)
+
+    data = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        "client_dw.html",
+        data=data
+    )
+# VANZARI DW
+@app.route("/dw/vanzari")
+def dw_vanzari():
+
+    cur = conn_dw.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM vanzari
+        ORDER BY id_factura
+    """)
+
+    data = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        "vanzari_dw.html",
+        data=data
+    )
+# TIMP DW
+@app.route("/dw/timp")
+def dw_timp():
+    cur = conn_dw.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM timp
+        ORDER BY id_timp
+    """)
+
+    data = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        "timp_dw.html",
+        timp=data,
+        tabel_curent="dw_timp"
+    )
+# LUCRARE DW
+@app.route("/dw/lucrare")
+def dw_lucrare():
+    cur = conn_dw.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM lucrare
+        ORDER BY id_lucrare
+    """)
+
+    data = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        "lucrare_dw.html",
+        lucrari=data,
+        tabel_curent="dw_lucrare"
+    )
+# LOCATIE DW
+@app.route("/dw/locatie")
+def dw_locatie():
+    cur = conn_dw.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM locatie
+        ORDER BY id_locatie
+    """)
+
+    data = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        "locatie_dw.html",
+        locatii=data,
+        tabel_curent="dw_locatie"
+    )
+# ECHIPA DW
+@app.route("/dw/echipa")
+def dw_echipa():
+    cur = conn_dw.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM echipa
+        ORDER BY id_echipa
+    """)
+
+    data = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        "echipa_dw.html",
+        echipe=data,
+        tabel_curent="dw_echipa"
+    )
 
 # RUN
 if __name__ == "__main__":

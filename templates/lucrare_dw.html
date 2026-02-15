@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>DW - DIMENSIUNE LUCRARE</h2>
+
+<div class="table-wrapper">
+<table border="1">
+<tr>
+<th>ID Lucrare</th>
+<th>Nume Lucrare</th>
+</tr>
+
+{% for l in lucrari %}
+<tr>
+<td>{{l[0]}}</td>
+<td>{{l[1]}}</td>
+</tr>
+{% endfor %}
+
+</table>
+</div>
+
+{% endblock %}
