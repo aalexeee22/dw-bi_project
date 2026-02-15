@@ -1547,12 +1547,13 @@ def sync_dw():
 
 # CLIENT DW
 @app.route("/dw/client")
+@app.route("/dw/client")
 def dw_client():
 
     cur = conn_dw.cursor()
 
     cur.execute("""
-        SELECT *
+        SELECT id_client, nume_client, nr_lucrari_anterioare
         FROM client
         ORDER BY id_client
     """)
@@ -1562,8 +1563,11 @@ def dw_client():
 
     return render_template(
         "client_dw.html",
-        data=data
+        data=data,
+        tabel_curent="dw_client",
+        zona="dw"
     )
+
 # VANZARI DW
 @app.route("/dw/vanzari")
 def dw_vanzari():
@@ -1581,8 +1585,11 @@ def dw_vanzari():
 
     return render_template(
         "vanzari_dw.html",
-        data=data
+        data=data,
+        tabel_curent="dw_vanzari",
+        zona="dw"
     )
+
 # TIMP DW
 @app.route("/dw/timp")
 def dw_timp():
