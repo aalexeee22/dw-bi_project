@@ -268,7 +268,6 @@ def angajat():
     """)
     angajati = cur.fetchall()
 
-    # ⭐ ECHIPE (asta lipsește)
     cur.execute("""
     SELECT id_echipa
     FROM ECHIPA
@@ -405,7 +404,6 @@ def update_angajat(id):
         if salariu <= 0:
             return "Salariul trebuie sa fie mai mare decat 0"
 
-        # ⭐ VALIDARE FK ECHIPA
         if echipa:
             cur.execute("""
                 SELECT COUNT(*)
@@ -416,7 +414,6 @@ def update_angajat(id):
             if cur.fetchone()[0] == 0:
                 return "Echipa nu exista"
 
-        # ⭐ UPDATE REAL
         cur.execute("""
         UPDATE ANGAJAT
         SET
